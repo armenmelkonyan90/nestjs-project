@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsEmail, MinLength, MaxLength } from "@nestjs/class-validator";
-import { IsPhoneNumber } from "class-validator";
+import { IsPhoneNumber, Validate } from "class-validator";
 import { Unique } from "typeorm";
 
 export class CreateUserDto {
