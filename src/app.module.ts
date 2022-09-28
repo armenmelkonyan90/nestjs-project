@@ -12,6 +12,8 @@ import { Admin } from './admin/entities/admin.entity';
 import { User } from './user/entities/user.entity';
 import { Profession } from './profession/entities/profession.entity';
 import { UserProfession } from './user-profession/entities/user-profession.entity';
+import { AuthModule } from './auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -28,7 +30,8 @@ import { UserProfession } from './user-profession/entities/user-profession.entit
     UserModule,
     AdminModule,
     ProfessionModule,
-    UserProfessionModule
+    UserProfessionModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

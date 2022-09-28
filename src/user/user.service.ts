@@ -14,27 +14,27 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) { }
 
- async create({username, first_name, last_name, email, phone, password}: CreateUserDto) {
+  async create({ username, first_name, last_name, email, phone, password }: CreateUserDto) {
     const saltOrRounds = 5;
 
     let insertData = {
-          status: StatusList.PENDING,
-          username,
-          first_name,
-          last_name,
-          email,
-          phone,
-          token: (Math.random() + 1).toString(36),
-          password: await bcrypt.hash(password, saltOrRounds)
+      status: StatusList.PENDING,
+      username,
+      first_name,
+      last_name,
+      email,
+      phone,
+      token: (Math.random() + 1).toString(36),
+      password: await bcrypt.hash(password, saltOrRounds)
     }
 
-    try{
+    try {
       this.usersRepository.insert(insertData)
-    } catch(error) {
+    } catch (error) {
 
     }
-    
-    
+
+
     return [];
   }
 
@@ -46,7 +46,17 @@ export class UserService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto):Promise<UpdateResult> {
+  findByUsernameAndEmail(username: string): Promise<User> {
+    return this.usersRepository.findOne(
+      {
+        where: [
+          {username},
+          {email: username}
+        ]
+      });
+  }
+
+  update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
   }
 
