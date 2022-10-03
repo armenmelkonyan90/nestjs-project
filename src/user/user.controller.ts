@@ -3,10 +3,12 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { IUser } from './user.interface';
 
+@UseGuards(AuthGuard('check-jwt'))
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -28,13 +30,24 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Patch()
+  async update(@Body() updateUserDto: UpdateUserDto, @Request() req): Promise<IUser> {
+    let authId = req.user.id;
+    await this.userService.update(+authId, updateUserDto);
+
+    let user = await this.userService.findOne(authId);
+
+    return {
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      phone: user.phone
+    };
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Delete()
+  delete(@Request() req) {
+    return this.userService.remove(+req.user.id);
   }
 }

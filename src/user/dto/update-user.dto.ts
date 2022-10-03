@@ -19,10 +19,6 @@ export class UpdateUserDto {
     last_name:string
 
     @IsNotEmpty()
-    @IsEmail()
-    email:string
-
-    @IsNotEmpty()
     // @IsPhoneNumber('AM')
     @IsPhoneNumber()
     phone:string
