@@ -50,14 +50,19 @@ export class UserService {
     return this.usersRepository.findOne(
       {
         where: [
-          {username},
-          {email: username}
+          { username },
+          { email: username }
         ]
       });
   }
 
   update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
+  }
+
+  async updateAvatar(id: number, avatar_name: string): Promise<void> {
+    await this.usersRepository.update(id, { avatar: avatar_name });
+    return;
   }
 
   remove(id: number) {

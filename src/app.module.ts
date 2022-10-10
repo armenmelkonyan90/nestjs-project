@@ -13,6 +13,8 @@ import { User } from './user/entities/user.entity';
 import { Profession } from './profession/entities/profession.entity';
 import { UserProfession } from './user-profession/entities/user-profession.entity';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -26,6 +28,9 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DATABASE_NAME,
       entities: [Admin, User, Profession, UserProfession],
       synchronize: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public')
     }),
     UserModule,
     AdminModule,

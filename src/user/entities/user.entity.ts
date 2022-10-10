@@ -55,6 +55,11 @@ export class User {
     activation_date: string;
 
     @Column({
+        nullable: true
+    })
+    avatar: string;
+
+    @Column({
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP'
     })
