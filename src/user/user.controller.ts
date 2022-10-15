@@ -14,10 +14,17 @@ export class UserController {
   constructor(private readonly userService: UserService, private readonly configService: ConfigService) { }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const isRegistred = await this.userService.create(createUserDto);
+
+    if (isRegistred) {
+      return {
+        message: "Succesfully registred. Please check your email and confirm"
+      }
+    }
+
     return {
-      message: "Created"
+      message: "Something went wrong, please try again"
     }
   }
 
