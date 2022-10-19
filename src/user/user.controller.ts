@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors, InternalServerErrorException, ParseFilePipeBuilder, UploadedFile, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import { Controller, UseInterceptors, InternalServerErrorException, ParseFilePipeBuilder, UploadedFile, Get, Post, Body, Patch, Param, Delete, Request, UseGuards, UnprocessableEntityException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -44,6 +44,18 @@ export class UserController {
   @UseGuards(AuthGuard('check-jwt'))
   async update(@Body() updateUserDto: UpdateUserDto, @Request() req): Promise<IUser> {
     let authId = req.user.id;
+
+    const checkUser = await this.userService.findByUsernameAndEmail(updateUserDto.username)
+
+    if (checkUser && checkUser.id != authId) {
+      throw new UnprocessableEntityException({
+        error: 'Unprocessible entity',
+        messages: [{
+          username: 'username value already exists'
+        }]
+      })
+    }
+
     await this.userService.update(+authId, updateUserDto);
 
     let user = await this.userService.findOne(authId);

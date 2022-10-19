@@ -17,6 +17,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { join } from 'path';
+import { UniqueConstraint } from './validation/unique.decorator';
 
 @Module({
   imports: [
@@ -63,6 +64,6 @@ import { join } from 'path';
     AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UniqueConstraint],
 })
 export class AppModule { }

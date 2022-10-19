@@ -1,12 +1,13 @@
 import { IsNotEmpty, IsEmail, MinLength, MaxLength } from "@nestjs/class-validator";
 import { IsPhoneNumber, Validate } from "class-validator";
-import { Unique } from "typeorm";
+import { Unique } from "../../validation/unique.decorator";
+import { User } from "../entities/user.entity";
 
 export class CreateUserDto {
     @IsNotEmpty()
-    @Unique('username-uniqe', ['username'])
     @MinLength(2)
     @MaxLength(20)
+    @Unique(User, 'username')
     username: string
     
     @IsNotEmpty()
@@ -21,11 +22,13 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsEmail()
+    @Unique(User, 'email')
     email:string
 
     @IsNotEmpty()
     // @IsPhoneNumber('AM')
     @IsPhoneNumber()
+    @Unique(User, 'phone')
     phone:string
 
     @IsNotEmpty()
