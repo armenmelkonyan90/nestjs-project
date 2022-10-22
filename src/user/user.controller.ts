@@ -8,10 +8,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { S3Service } from '../aws/s3/s3.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly configService: ConfigService) { }
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
+    private readonly s3Service: S3Service
+  ) { }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
@@ -80,26 +85,42 @@ export class UserController {
       .build(),
   ) file: Express.Multer.File, @Request() req) {
     console.log(file);
+    console.log(req.user);
     let user_id = req.user.id;
-    let avatar_path = `public/avatar/${user_id}/`;
+    let avatar_path = `arzin/avatar/${user_id}/`;
+    let file_name = file.originalname;
 
     try {
-      if (!fs.existsSync(avatar_path)) {
-        fs.mkdirSync(avatar_path, { recursive: true });
+      /**
+      //  Save to local server
+        let avatar_path = `public/avatar/${user_id}/`;
+
+        if (!fs.existsSync(avatar_path)) {
+          fs.mkdirSync(avatar_path, { recursive: true });
+        }
+        let file_name = file.originalname;
+
+        fs.writeFileSync(avatar_path + file_name, file.buffer.toString())
+      */
+      const user = await this.userService.findOne(user_id);
+      const isUploaded = await this.s3Service.upload(file, `${avatar_path}`);
+
+      if (isUploaded) {
+        if(user.avatar){
+          await this.s3Service.delete(`${avatar_path}${user.avatar}`)
+        }
+
+        await this.userService.updateAvatar(user_id, file_name)
       }
-      let file_name = file.originalname;
-
-      fs.writeFileSync(avatar_path + file_name, file.buffer.toString())
-
-      await this.userService.updateAvatar(user_id, file_name)
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException("Something went wrong")
     }
 
-    let api_url = this.configService.get<string>('API_URL');
+    // let api_url = this.configService.get<string>('API_URL');
+    let s3_url = this.configService.get<string>('AWS_S3_URL');
 
-    return { url: `${api_url}/avatar/${user_id}/` + file.originalname };
+    return { url: `${s3_url}/${avatar_path}` + file_name };
   }
 
   @Delete()

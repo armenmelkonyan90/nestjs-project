@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { S3Service } from 'src/aws/s3/s3.service';
 
 @Module({
   imports:[
@@ -12,6 +13,6 @@ import { ConfigService } from '@nestjs/config';
     ])
   ],
   controllers: [UserController],
-  providers: [UserService, ConfigService]
+  providers: [UserService, ConfigService, S3Service]
 })
 export class UserModule {}
