@@ -7,6 +7,7 @@ import { UpdateUserProfessionDto } from './dto/update-user-profession.dto';
 export class UserProfessionController {
   constructor(private readonly userProfessionService: UserProfessionService) {}
 
+  
   @Post()
   create(@Body() createUserProfessionDto: CreateUserProfessionDto) {
     return this.userProfessionService.create(createUserProfessionDto);
